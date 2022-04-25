@@ -1,12 +1,30 @@
 import numpy as np
 
-#gradient decent algorithm : 경사 하강법
-x_data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9]).reshape(9, 1)
-t_data = np.array([10, 15, 30, 32, 55, 52, 70, 60, 80]).reshape(9, 1)
+learning_rate = 1e-5
 
-W = np.random.rand(1, 1)
+loaded_data = np.loadtxt('./data/data-01-test-score.csv', delimiter=',', dtype=np.float32)
+
+x_data = loaded_data[:, 0:-1]
+t_data = loaded_data[:, [-1]]
+
+W = np.random.rand(3, 1)
 b = np.random.rand(1)
 print("W = ", W, ", W.shape = ", W.shape, "b = ", b, "b.shape = ", b.shape)
+
+def loss_func(x, t):
+    y = np.dot(x, W) + b
+    return (np.sum((t - y)** 2)) / (len(x))
+
+def error_val(x, t):
+    y = np.dot(x, W) + b
+    return (np.sum((t - y) ** 2)) / (len(x))
+
+def predict(x):
+    y = np.dot(x, W) + b
+    return y
+
+f = lambda x : loss_func(x_data, t_data)
+print("initial error value = ", error_val(x_data, t_data), "initial W = ", W, "\n, b = ", b)
 
 def numerical_derivative(f, x):
     delta_x = 1e-4
@@ -32,25 +50,7 @@ def numerical_derivative(f, x):
         it.iternext()
     return grad
 
-def loss_func(x, t):
-    y = np.dot(x, W) + b
-    return (np.sum((t - y)** 2)) / (len(x))
-
-def error_val(x, t):
-    y = np.dot(x, W) + b
-    return (np.sum((t - y) ** 2)) / (len(x))
-
-def predict(x):
-    y = np.dot(x, W) + b
-    return y
-
-learning_rate = 1e-2
-
-f = lambda x : loss_func(x_data, t_data)
-
-print("initial error value = ", error_val(x_data, t_data), "initial W = ", W, "\n, b = ", b)
-
-for step in range(3000):
+for step in range(10000):
     W -= learning_rate* numerical_derivative(f, W)
     b -= learning_rate* numerical_derivative(f, b)
     
@@ -58,3 +58,6 @@ for step in range(3000):
         print("step = ", step, ", error Value = ", error_val(x_data, t_data), ", W = ", W, ", b = ", b)
 
 print("step = ", step, ", error Value = ", error_val(x_data, t_data), ", W = ", W, ", b = ", b)
+
+test_data = np.array([100, 98, 81])
+predict(test_data)
